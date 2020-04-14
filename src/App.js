@@ -5,32 +5,23 @@ import  './data.js';
 import today from './data.js';
 import hotelsData from './data.js';
 
-
-
-
-class App extends React.Component {
-  constructor(props) {super(props)
+class App  {
+  constructor() {
     this.state = {
       filters:{
       dateFrom: today,
       dateTo: new Date(today.valueOf() + 86400000),
       country: '',
-      price: 0,
+      price: 0, 
       rooms: 0
     },
   hotels:hotelsData
-}
-    };
-    handleFilterChange(payload) {
-      this.setState({
-        filters: payload
-      })
     }
-    render() {
     return (<div>
       <Hero filters={this.state.filters} />
       <Filters filters={this.state.filters}  onFilterChange={ this.handleFilterChange } />
       <Hotel hotel={ hotelsData[0] } />
+      <Hotels data={hotelsData} />
     </div>);
   }
 }
@@ -40,24 +31,27 @@ function Hero(props){
   month: "long", 
   day: "numeric", 
 }
+const date_to=new Date(today.valueOf() + 86400000)
   return (
     <section className="hero is-primary">
     <div className="hero-body">
       <div className="container">
         <h1 className="title">Hoteles</h1>
         <h2 className="subtitle">
-          desde el <strong>{today.toLocaleString("es-ES", formato)}</strong> hasta el <strong>dddd, DD de mmmm de AAAA</strong>
-        </h2>
+        desde el <strong>{today.toLocaleString("es-ES", formato)}</strong> hasta el <strong>{date_to.toLocaleString("es-ES", formato)}</strong>
+        </h2> 
       </div>
     </div>
   </section>
   )
 }
-class DateFilter extends React.Component {
+class DateFilter extends App {
   constructor(props){super(props)
   this.handledatechange =this.handledatechange.bind(this)}
+
   handledatechange(event){
     this.props.ondatechange(event)}
+
   render(){
     return(
   <div className="field">
@@ -69,13 +63,16 @@ class DateFilter extends React.Component {
   </div>
 </div>)}
 }
-function OptionsFilter(){
-  const opciones=[
+class OptionsFilter extends App { constructor(props) {super(props)
+  this.setState= {opciones:[
     { value: undefined, name: 'Cualquier tamaño' },
     { value: 10, name: 'Hotel pequeño' },
     { value: 20, name: 'Hotel mediano' },
     { value: 30, name: 'Hotel grande' }
-  ]
+  ]}}
+  render(){
+  const {opciones} = this.state.map((opcion) =>
+  <li>{opcion}</li>);
   return(
   <div className="field">
   <div className="control has-icons-left">
@@ -85,20 +82,22 @@ function OptionsFilter(){
       </select>
     </div>
     <div className="icon is-small is-left">
-  <i className="fas">{opciones.map}</i>
+  <i className="fas">{opciones}</i>
     </div>
   </div>
-</div>)
+</div>)}
 }
-class Filters extends React.Component{
+
+class Filters extends App{
   constructor(props){super(props)
     this.handledatechange =this.handledatechange.bind(this)}
-  handleOptionChange(event) {
+
+    handleOptionChange(event){
     let payload = this.props.filters
     payload[event.target.name] = event.target.value
     this.props.onFilterChange(payload)
   }
-  render() {
+  render(){
   return(
 <nav className="navbar is-info" style={ {justifyContent: 'center'} }>
   <div className="navbar-item">
@@ -114,7 +113,7 @@ class Filters extends React.Component{
   <div className="navbar-item">
   <OptionsFilter
       options={ [ {value: undefined, name: 'Todos los países'}, {value: 'Argentina', name: 'Argentina'}, {value: 'Brasil', name: 'Brasil'}, {value: 'Chile', name: 'Chile'}, {value: 'Uruguay', name: 'Uruguay'} ] }
-      selected={ this.props.filters.country }
+      selected={ this.handleOptionChange }
       icon="globe" />
   </div>
   <div className="navbar-item">
@@ -132,6 +131,7 @@ class Filters extends React.Component{
 </nav>
   )
 }}
+
 function Hotel(){
   return (
     <div className="card">
@@ -171,6 +171,24 @@ function Hotel(){
 
 </div>
   )
+}
+function Hotels(props) {
+  const listhotel = hotelsData.map((hotel) =>
+  <div className="column is-one-third">
+  <Hotel data={ hotel } />
+</div>
+);
+return (
+  <section className="section" style={ {marginTop: '3em'} }>
+  <div className="container">
+    <div className="columns is-multiline">
+    <i className="fas">{listhotel}</i>
+
+    </div>
+  </div>
+</section>
+)
+  
 }
 export default App;
 
